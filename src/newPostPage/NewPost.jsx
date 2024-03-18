@@ -1,46 +1,53 @@
 import './NewPost.css';
-import {useState} from 'react';
+import { useState } from 'react';
 import calculatedReadTime from "../helpers/calculatedReadTime.js";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Ensure you've installed Axios
 
 function NewPost() {
-    const [formState, setFormState] = useState ({
+    const [formState, setFormState] = useState({
         title: '',
         subtitle: '',
         author: '',
         content: '',
-
     });
 
     const navigate = useNavigate();
 
     function handleChange(e) {
-        setFormState ({
+        setFormState({
             ...formState,
-            [e.traget.name]: e.target.value,
-        })
+            [e.target.name]: e.target.value, // Fixed typo here
+        });
     }
 
-    function handleSubmit(e) {
-        e.preventDefault ();
+    async function handleSubmit(e) {
+        e.preventDefault();
 
-        console.log ({
+        const postData = {
             ...formState,
             shares: 0,
             comments: 0,
             created: new Date().toISOString(),
             readTime: calculatedReadTime(formState.content),
-        });
+        };
 
-        console.log ('De blos is successvol verzameld!');
+        try {
+            const response = await axios.post('http://localhost:3000/posts', postData);
+            console.log('De blog is succesvol verzameld!', response.data);
+            // Optionally navigate to another route after success
+            navigate('/');
+        } catch (error) {
+            console.error('Failed to submit post', error);
+        }
     }
 
     return (
         <section className="new-post-section outer-content-container">
             <div className="inner-content-container_text-restriction">
                 <form className="new-post-form" onSubmit={handleSubmit}>
-                    <h1> Post toevogen </h1>
-                    <label htmlFor="Post-title"> Title</label>
+                    <h1>Post toevoegen</h1>
+                    <label htmlFor="post-title">Title</label>
                     <input
                         type="text"
                         id="post-title"
@@ -48,8 +55,8 @@ function NewPost() {
                         required
                         value={formState.title}
                         onChange={handleChange}
-                        />
-                    <label htmlFor="post-subtitle"> Subtitle</label>
+                    />
+                    <label htmlFor="post-subtitle">Subtitle</label>
                     <input
                         type="text"
                         id="post-subtitle"
@@ -57,8 +64,8 @@ function NewPost() {
                         required
                         value={formState.subtitle}
                         onChange={handleChange}
-                        />
-                    <label htmlFor="post-authoer">Naam en achternaam</label>
+                    />
+                    <label htmlFor="post-author">Naam en achternaam</label>
                     <input
                         type="text"
                         id="post-author"
@@ -66,8 +73,8 @@ function NewPost() {
                         required
                         value={formState.author}
                         onChange={handleChange}
-                        />
-                    <label htmlFor="post-content"> Blogpost</label>
+                    />
+                    <label htmlFor="post-content">Blogpost</label>
                     <textarea
                         name="content"
                         id="post-content"
@@ -76,10 +83,10 @@ function NewPost() {
                         required
                         minLength={300}
                         maxLength={2000}
-                        value={fomrState.content}
+                        value={formState.content} // Fixed typo here
                         onChange={handleChange}></textarea>
                     <button type="submit">
-                        Toevogen
+                        Toevoegen
                     </button>
                 </form>
             </div>
@@ -87,4 +94,4 @@ function NewPost() {
     );
 }
 
-export default NewPost
+export default NewPost;

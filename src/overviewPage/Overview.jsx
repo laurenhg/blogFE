@@ -1,9 +1,24 @@
-
+import React, {useEffect, useState} from "react";
 import './Overview.css';
-import posts from '../constants/data.json';
+// import posts from '../constants/data.json';
 import {Link} from 'react-router-dom';
+import axios from 'axios';
 
 function Overview() {
+    const [posts, setPosts] = useState([]);
+
+    useEfeect (() => {
+        const fetchPosts = async () => {
+            try {
+                const response = await axios.get('https://localhost:3000/posts');
+                setPosts(response.data);
+            } catch (error) {
+                console.error("Error fetching posts:", error);
+            }
+        };
+        fetchPosts();
+    }, []);
+
     return (
         <section className="overview-section outer-content-container">
             <div className="inner-content-container">

@@ -1,15 +1,33 @@
 
+import React, {useEffect, useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
+import axios from 'axios';
 import formatDateString from "../helpers/formatDateString.js";
 import{CaretLeft, Clock} from "@phosphor-icons/react";
 import './PostDetail.css';
-import React from 'react';
+
 function PostDetail () {
     const {id} = useParams();
+    const [post, setPost] = useState(null);
 
-    const {title, readTime, subtitle, author, created, content, comments, shares} = posts.find((post) => {
-        return post.id.toString()===id;
-    });
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3000/posts/${id}`);
+                setPost(response.data);
+            } catch (error) {
+                console.error("Error fetching post details", error);
+            }
+        };
+        fetchPost();
+    }, [id]);
+
+    if(!post) return <div>Loading...</div>;
+
+
+    // const {title, readTime, subtitle, author, created, content, comments, shares} = posts.find((post) => {
+    //     return post.id.toString()===id;
+    // });
 
     return (
         <section className="post-detail-section outer-content-container">
